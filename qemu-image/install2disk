@@ -1,0 +1,27 @@
+#!/bin/bash -x
+
+
+cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  resize_device: /dev/sda
+EOF
+
+sudo ros install \
+    -d /dev/sda \
+    -c $(pwd)/cloud-config.yml \
+    --no-reboot \
+    --debug \
+    --append "console=ttyS-1 rancher.autologin=ttyS0 printk.devkmsg=on"
+
+mkdir -p /mnt/sda1
+sudo mount /dev/sda1 /mnt/sda1
+sudo mkdir -p /mnt/sda1/var/lib
+sudo system-docker stop docker
+sudo cp -r /var/lib/docker /mnt/sda1/var/lib/docker
+sudo mount --rbind /mnt/sda1/var/lib/docker /var/lib/docker
+sudo system-docker start docker
+wget https://github.com/rancher/rke/releases/download/v0.2.4/rke_linux-amd64 -O rke
+chmod +x rke
+./rke up --local
+./rke remove --local

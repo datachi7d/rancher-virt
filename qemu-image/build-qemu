@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ISO_CHECKSUM=cbea715897112f069f59ae026fc75baa75a087cab1bfbc9765e3c13c46b34dc1 \
+RANCHEROS_VERSION=1.5.2 \
+PACKER_BOOT_WAIT=90 \
+packer build qemu.json
